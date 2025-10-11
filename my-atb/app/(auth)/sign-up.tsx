@@ -6,7 +6,7 @@ import FormField from "@/components/form-fields";
 import CustomButton from "@/components/custom-button";
 import {pickImage} from "@/utils/pickImage";
 import {useRouter} from "expo-router";
-
+import { showMessage } from "react-native-flash-message";
 
 const userInitState: IUserCreate = {
     email: '',
@@ -35,6 +35,14 @@ const SignUp = () => {
     };
 
     const submit = async () => {
+        if (errors.length !== 0) {
+            // console.error(errors);
+            showMessage({
+                message: "Правильно заповніть всі поля",
+                type: "info",
+            });
+            return;
+        }
         console.log("Submit form", user);
     }
 
