@@ -1,0 +1,1 @@
+Створити проект ASP.NET Core Api і підключити БД і Idenity.
