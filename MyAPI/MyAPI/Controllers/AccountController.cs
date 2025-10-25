@@ -49,7 +49,7 @@ public class AccountController(IJwtTokenService jwtTokenService,
             {
                 status = 400,
                 isValid = false,
-                errors = "Registration failed"
+                errors = result.Errors.ToList()
             });
         }
     }
