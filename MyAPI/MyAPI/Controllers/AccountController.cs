@@ -29,6 +29,7 @@ public class AccountController(IJwtTokenService jwtTokenService,
     [HttpPost]
     public async Task<IActionResult> Register([FromForm] RegisterModel model)
     {
+        var request = Request;
         var user = mapper.Map<UserEntity>(model);
 
         user.Image = await imageService.SaveImageAsync(model.ImageFile!);
