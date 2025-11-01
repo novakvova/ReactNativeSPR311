@@ -3,6 +3,7 @@ import {createBaseQuery} from "@/utils/createBaseQuery";
 import {ILoginResponse} from "@/types/account/ILoginResponse";
 import {IRegisterRequest} from "@/types/account/IRegisterRequest";
 import {serialize} from "object-to-formdata";
+import {ILoginRequest} from "@/types/account/ILoginRequest";
 
 export const apiAccount = createApi({
     reducerPath: "apiAccount",
@@ -19,8 +20,17 @@ export const apiAccount = createApi({
                     body: formData
                 }
             }
+        }),
+        login: builder.mutation<ILoginResponse,ILoginRequest>({
+            query: (data) => {
+                return {
+                    url: "login",
+                    method: "POST",
+                    body: data
+                }
+            }
         })
     }),
 });
 
-export const {useRegisterMutation} = apiAccount;
+export const {useRegisterMutation, useLoginMutation} = apiAccount;
