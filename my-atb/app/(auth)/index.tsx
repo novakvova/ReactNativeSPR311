@@ -1,6 +1,6 @@
 import {Dimensions, SafeAreaView, ScrollView, Text, View} from "react-native";
 import {ILoginRequest} from "@/types/account/ILoginRequest";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 // import {IUserCreate} from "@/models/account";
 import {useRouter} from "expo-router";
 import {showMessage} from "react-native-flash-message";
@@ -9,12 +9,18 @@ import {showMessage} from "react-native-flash-message";
 import {useLoginMutation} from "@/services/apiAccount";
 import FormField from "@/components/form-fields";
 import CustomButton from "@/components/custom-button";
+import {saveSecureStore, getSecureStore} from "@/utils/secureStore";
+import {getUserFromToken} from "@/store/authSlice";
 
 
 const SignIn = () => {
     const [login, {isLoading, error: loginError}] = useLoginMutation();
 
-    //console.log("login", isLoading, loginError);
+    if(getSecureStore("token")) {
+        const user = getUserFromToken(getSecureStore("token") || "");
+        console.log("User auth (login page)", user);
+    }
+
 
     const initState: ILoginRequest = {
         email: '',
@@ -51,7 +57,9 @@ const SignIn = () => {
             if (result.error) {
                 console.error("Problema with login", result.error);
             } else {
-                router.replace("/(auth)/sign-up");
+                saveSecureStore("token", result.data.token)
+                console.log("Login is good", result.data.token);
+                //router.replace("/(auth)/sign-up");
             }
             //console.log("Submit form-- result",  result);
             //
