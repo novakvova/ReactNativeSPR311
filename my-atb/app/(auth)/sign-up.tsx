@@ -28,7 +28,7 @@ const SignUp = () => {
     //Метод register - для реєстрації
     //boolean isLoading - Для відслідковування запиту
     //error - об'єкт, який містить помилки
-    console.log("Register", isLoading, registerError);
+    // console.log("Register", isLoading, registerError);
     //Зберігає дані користувача
     const [user, setUser] = useState<IUserCreate>(userInitState);
     //Зберігає помилки

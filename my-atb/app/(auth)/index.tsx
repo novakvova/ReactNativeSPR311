@@ -1,26 +1,21 @@
 import {Dimensions, SafeAreaView, ScrollView, Text, View} from "react-native";
 import {ILoginRequest} from "@/types/account/ILoginRequest";
-import {useEffect, useState} from "react";
-// import {IUserCreate} from "@/models/account";
+import { useState} from "react";
 import {useRouter} from "expo-router";
 import {showMessage} from "react-native-flash-message";
-// import {getFileFromUriAsync} from "@/utils/getFileFromUriAsync";
-// import {IRegisterRequest} from "@/types/account/IRegisterRequest";
 import {useLoginMutation} from "@/services/apiAccount";
 import FormField from "@/components/form-fields";
 import CustomButton from "@/components/custom-button";
-import {saveSecureStore, getSecureStore} from "@/utils/secureStore";
-import {getUserFromToken} from "@/store/authSlice";
+import {login, logout} from "@/store/authSlice";
+import {useAppDispatch, useAppSelector} from "@/store";
 
 
 const SignIn = () => {
-    const [login, {isLoading, error: loginError}] = useLoginMutation();
+    const [loginPOST, {isLoading, error: loginError}] = useLoginMutation();
 
-    if(getSecureStore("token")) {
-        const user = getUserFromToken(getSecureStore("token") || "");
-        console.log("User auth (login page)", user);
-    }
+    const dispatch = useAppDispatch();
 
+    const {user} = useAppSelector(globalState => globalState.auth);
 
     const initState: ILoginRequest = {
         email: '',
@@ -53,12 +48,12 @@ const SignIn = () => {
         }
 
         try {
-            const result = await login(form);
+            const result = await loginPOST(form);
             if (result.error) {
                 console.error("Problema with login", result.error);
             } else {
-                saveSecureStore("token", result.data.token)
-                console.log("Login is good", result.data.token);
+                const {token} = result.data;
+                dispatch(login(token));
                 //router.replace("/(auth)/sign-up");
             }
             //console.log("Submit form-- result",  result);
@@ -66,8 +61,15 @@ const SignIn = () => {
         } catch (ex) {
             console.log("Submit form-- error", ex);
         }
+    }
 
-
+    const handleLogout = async () => {
+        try {
+            dispatch(logout());
+        }
+        catch (ex) {
+            console.log("Logout error", ex);
+        }
     }
 
     return (
@@ -86,6 +88,14 @@ const SignIn = () => {
                     <Text className="text-2xl font-semibold text-slate-4Ad00 mt-10 font-psemibold">
                         Вхід у наш додаток
                     </Text>
+
+                    {
+                        user &&
+                        <Text className="text-2xl font-semibold text-green-500 mt-10 font-psemibold">
+                            {user?.name}
+                        </Text>
+                    }
+
                     {loginError &&
                         <View
                             className="p-4 w-full rounded-lg bg-red-50" >
@@ -131,8 +141,16 @@ const SignIn = () => {
                         ]}
                     />
 
-                    <CustomButton title="Вхід" handlePress={submit}
-                                  containerStyles="mt-7 w-full bg-slate-500 rounded-xl"/>
+                    { !user &&
+                        <CustomButton title="Вхід" handlePress={submit}
+                                      containerStyles="mt-7 w-full bg-slate-500 rounded-xl"/>
+                    }
+
+
+                    { user &&
+                        <CustomButton title="Вихід" handlePress={handleLogout}
+                                  containerStyles="mt-7 w-full bg-green-500 rounded-xl"/>
+                    }
 
                     <CustomButton title="Реєстрація" handlePress={() => {
                         router.replace("/(auth)/sign-up")
