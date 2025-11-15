@@ -19,10 +19,6 @@ const ProfileScreen = () => {
                             <Text className="mt-2 text-4xl font-pbold font-bold text-secondary">АТБ</Text>
                         </View>
 
-                        <Text className="text-2xl font-semibold text-slate-4Ad00 mt-10 font-psemibold">
-                            Інформація про користувача
-                        </Text>
-
                         {/* ====== БЛОК ІНФОРМАЦІЇ ПРО КОРИСТУВАЧА ====== */}
                         {userProfile && (
                             <View className="mt-6 bg-white rounded-2xl px-6 py-4 w-full shadow">
