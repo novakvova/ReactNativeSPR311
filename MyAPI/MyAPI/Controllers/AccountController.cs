@@ -3,16 +3,18 @@ using Core.Constants;
 using Core.Interfaces;
 using Core.Models.Account;
 using Domain.Entities.Identity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-
 namespace MyAPI.Controllers;
 
 [Route("api/[controller]/[action]")]
 [ApiController]
 public class AccountController(IJwtTokenService jwtTokenService,
         IMapper mapper, IImageService imageService,
-        UserManager<UserEntity> userManager) : ControllerBase
+        UserManager<UserEntity> userManager,
+        IUserService userService,
+        IAuthService authService) : ControllerBase
 {
     [HttpPost]
     public async Task<IActionResult> Login([FromBody] LoginModel model)
@@ -27,6 +29,7 @@ public class AccountController(IJwtTokenService jwtTokenService,
     }
 
     [HttpPost]
+    //[Authorize(Roles=$"{Roles.Admin}")]
     public async Task<IActionResult> Register([FromForm] RegisterModel model)
     {
         var request = Request;
@@ -53,5 +56,14 @@ public class AccountController(IJwtTokenService jwtTokenService,
                 errors = result.Errors.ToList()
             });
         }
+    }
+
+    [HttpGet]
+    [Authorize]
+    public async Task<IActionResult> Profile()
+    {
+        var userId = await authService.GetUserIdAsync();
+        var userInfo = await userService.GetUserByIdAsync(userId);
+        return Ok(userInfo);
     }
 }
