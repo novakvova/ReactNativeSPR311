@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Core.Interfaces;
 using Core.Models.NoteCategory;
 using Domain;
 using Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace Core.Services;
 
@@ -25,5 +27,17 @@ public class NoteCategoryService(IAuthService authService,
 
         var result = mapper.Map<NoteCategoryItemModel>(entity);
         return result;
+    }
+
+    public async Task<List<NoteCategoryItemModel>> List()
+    {
+        var user = await authService.GetUserIdAsync();
+
+        var list = await appDbContext.NoteCategories
+            .Where(x => x.UserId == user)
+            .ProjectTo<NoteCategoryItemModel>(mapper.ConfigurationProvider)
+            .ToListAsync() ?? new List<NoteCategoryItemModel>();
+
+        return list;
     }
 }

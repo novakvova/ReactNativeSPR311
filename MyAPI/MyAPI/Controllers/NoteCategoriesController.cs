@@ -7,7 +7,7 @@ namespace MyAPI.Controllers;
 
 [Authorize]
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/[controller]/[action]")]
 public class NoteCategoriesController(INoteCategoryService categoryService) 
     : ControllerBase
 {
@@ -16,5 +16,12 @@ public class NoteCategoriesController(INoteCategoryService categoryService)
     {
         var result = await categoryService.Create(model);
         return Ok(result);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> List()
+    {
+        var items = await categoryService.List();
+        return Ok(items);
     }
 }
